@@ -10,11 +10,13 @@ public class Bolt : MonoBehaviour
     [SerializeField] private float moveDistance = 0.2f;
     [SerializeField] private float moveDuration = 2f;
 
+    [HideInInspector] public bool isEndAnimation = false;
     private bool isActivated = false;
     private Transform myTransform;
 
-    [Header("Other Settings")]
-    [SerializeField] private RotateModel model;
+    //[Header("Other Settings")]
+
+    private RotateModel model;
 
     private void Start()
     {
@@ -22,6 +24,8 @@ public class Bolt : MonoBehaviour
 
         MeshRenderer mesh = GetComponent<MeshRenderer>();
         mesh.material = RandomMaterial();
+
+        model = FindObjectOfType<RotateModel>();
     }
 
     private Material RandomMaterial()
@@ -44,7 +48,17 @@ public class Bolt : MonoBehaviour
     private void BoltMoving()
     {
         myTransform.DOLocalMove(myTransform.localPosition + Vector3.up * moveDistance, moveDuration)
-        .SetEase(Ease.InOutQuad);
+            .SetEase(Ease.InOutQuad);
+
+        myTransform.DOLocalRotate(
+                myTransform.localEulerAngles + new Vector3(0f, 0f, rotationAmount),
+                rotationDuration,
+                RotateMode.FastBeyond360
+            )
+            .SetEase(Ease.InOutQuad)
+            .OnComplete(() => isEndAnimation = true);
     }
+
+
 
 }
