@@ -55,4 +55,9 @@ public class ParentBolt : MonoBehaviour
             }
         }
     }
+
+    public int GetBoltCount()
+    {
+        return boltList.Count;
+    }
 }

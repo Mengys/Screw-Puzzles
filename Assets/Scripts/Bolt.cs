@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class Bolt : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class Bolt : MonoBehaviour
     //[Header("Other Settings")]
 
     private RotateModel model;
+    private SoundManager sound;
 
     private void Start()
     {
@@ -26,6 +28,7 @@ public class Bolt : MonoBehaviour
         mesh.material = RandomMaterial();
 
         model = FindObjectOfType<RotateModel>();
+        sound = FindObjectOfType<SoundManager>();
     }
 
     private Material RandomMaterial()
@@ -47,6 +50,8 @@ public class Bolt : MonoBehaviour
 
     private void BoltMoving()
     {
+        sound.PlaySFX();
+
         myTransform.DOLocalMove(myTransform.localPosition + Vector3.up * moveDistance, moveDuration)
             .SetEase(Ease.InOutQuad);
 
