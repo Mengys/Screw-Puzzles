@@ -5,7 +5,7 @@ using TMPro;
 
 public class ParentBolt : MonoBehaviour
 {
-    [SerializeField] private List<Bolt> boltList = new List<Bolt>();
+    [SerializeField] public List<Bolt> boltList = new List<Bolt>();
     [SerializeField] private RectTransform targetObject;
     [SerializeField] public TextMeshProUGUI boltText;
 
