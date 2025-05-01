@@ -48,6 +48,7 @@ public class ParentBolt : MonoBehaviour
                     .OnComplete(() =>
                     {
                         Destroy(bolt.gameObject);
+                        Destroy(bolt.transform.parent.gameObject);
                         boltList.Remove(bolt);
                         currentCountBolt++;
                         boltText.text = currentCountBolt.ToString() + " / " + boltAllCount.ToString();

@@ -1,18 +1,27 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BoltDetection : MonoBehaviour
 {
+    [SerializeField] private List<Bolt> holdingBolts = new List<Bolt>();
+    [SerializeField] private float detachForce = 200f;
+
     private bool isDetached = false;
-    private float detachForce = 200f;
 
-    private void OnCollisionStay(Collision collision)
+    private void Update()
     {
-        Debug.Log(collision.gameObject);
+        TryDetach();
+    }
 
+    private void TryDetach()
+    {
         if (isDetached)
             return;
 
-        if (collision.gameObject.GetComponentInChildren<Bolt>())
+        holdingBolts.RemoveAll(bolt => bolt == null || bolt.gameObject == null);
+
+        if (holdingBolts.Count == 0)
         {
             Detach();
         }
@@ -30,7 +39,5 @@ public class BoltDetection : MonoBehaviour
 
         Vector3 randomDirection = (transform.position - transform.parent.position).normalized + Random.insideUnitSphere * 0.3f;
         rb.AddForce(randomDirection * detachForce);
-
-        Debug.Log($"Деталь {gameObject.name} отсоединилась!");
     }
 }

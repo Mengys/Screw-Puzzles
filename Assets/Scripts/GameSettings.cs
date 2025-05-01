@@ -82,8 +82,8 @@ public class GameSettings : MonoBehaviour
     {
         if (parentBolt.boltAllCount == parentBolt.currentCountBolt && parentBolt != null)
         {
-            closeChest.gameObject.SetActive(false);
-            openChest.gameObject.SetActive(true);
+            //closeChest.gameObject.SetActive(false);
+            //openChest.gameObject.SetActive(true);
 
             levelNumber++;
             LevelUpdate();

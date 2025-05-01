@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using DG.Tweening;
-using Unity.VisualScripting;
 
 public class Bolt : MonoBehaviour
 {
@@ -33,11 +32,22 @@ public class Bolt : MonoBehaviour
 
     private Material RandomMaterial()
     {
-        var color = new Color(Random.value, Random.value, Random.value);
+        Color[] colors = new Color[]
+        {
+        Color.red,
+        Color.green,
+        Color.blue,
+        Color.yellow,
+        Color.magenta
+        };
+
+        Color randomColor = colors[Random.Range(0, colors.Length)];
+
         var material = new Material(Shader.Find("Standard"));
-        material.color = color;
+        material.color = randomColor;
         return material;
     }
+
 
     private void OnMouseDown()
     {
@@ -63,7 +73,4 @@ public class Bolt : MonoBehaviour
             .SetEase(Ease.InOutQuad)
             .OnComplete(() => isEndAnimation = true);
     }
-
-
-
 }
