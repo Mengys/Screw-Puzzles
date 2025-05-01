@@ -35,8 +35,9 @@ public class ParentBolt : MonoBehaviour
 
     private void Update()
     {
-        foreach (Bolt bolt in boltList)
+        for (int i = boltList.Count - 1; i >= 0; i--)
         {
+            Bolt bolt = boltList[i];
             if (bolt.isEndAnimation)
             {
                 bolt.isEndAnimation = false;
@@ -49,9 +50,13 @@ public class ParentBolt : MonoBehaviour
                     {
                         Destroy(bolt.gameObject);
                         Destroy(bolt.transform.parent.gameObject);
+
                         boltList.Remove(bolt);
                         currentCountBolt++;
                         boltText.text = currentCountBolt.ToString() + " / " + boltAllCount.ToString();
+
+                        FindObjectOfType<TaskManager>().ProgressBoltTask(bolt.mesh.material.color);
+
                     });
             }
         }

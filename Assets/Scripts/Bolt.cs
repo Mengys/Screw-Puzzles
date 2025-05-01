@@ -11,6 +11,8 @@ public class Bolt : MonoBehaviour
     [SerializeField] private float moveDuration = 2f;
 
     [HideInInspector] public bool isEndAnimation = false;
+    [HideInInspector] public MeshRenderer mesh;
+
     private bool isActivated = false;
     private Transform myTransform;
 
@@ -23,7 +25,7 @@ public class Bolt : MonoBehaviour
     {
         myTransform = transform;
 
-        MeshRenderer mesh = GetComponent<MeshRenderer>();
+        mesh = GetComponent<MeshRenderer>();
         mesh.material = RandomMaterial();
 
         model = FindObjectOfType<RotateModel>();

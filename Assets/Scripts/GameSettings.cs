@@ -1,5 +1,5 @@
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
@@ -9,13 +9,9 @@ public class GameSettings : MonoBehaviour
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private int levelNumber = 1;
 
-    [Header("Level Settings")]
-    [SerializeField] private Image closeChest;
-    [SerializeField] private Image openChest;
-
     [Header("Money Settings")]
     [SerializeField] private TextMeshProUGUI moneyText;
-    private int ñurrentMoney;
+    private int currentMoney;
 
     [Header("Model Settings")]
     [SerializeField] private GameObject mainModel;
@@ -29,37 +25,57 @@ public class GameSettings : MonoBehaviour
 
     [Header("Other Settings")]
     private ParentBolt parentBolt;
-    [SerializeField] GameObject gameParent;
+    [SerializeField] private GameObject gameParent;
+    [SerializeField] private TaskManager taskManager;
+
+    private bool levelCompleted = false;
+    private bool resetting = false;
 
     private void Awake()
     {
         Initialize();
+        LevelUpdate();
+        AddMoney(10);
     }
 
     private void Initialize()
     {
-        SaveModelDefaults(models[--levelNumber]);
-        levelNumber++;
+        if (models == null || models.Count == 0)
+        {
+            Debug.LogError("Models list is empty or not assigned!");
+            return;
+        }
+
+        int index = levelNumber - 1;
+
+        if (index < 0 || index >= models.Count)
+        {
+            Debug.LogError("Invalid level number!");
+            return;
+        }
+
+        SaveModelDefaults(models[index]);
 
         if (spawnedModel != null)
             Destroy(spawnedModel);
 
-        GameObject modelPrefab = models[--levelNumber];
-        levelNumber++;
-
+        GameObject modelPrefab = models[index];
         spawnedModel = Instantiate(modelPrefab, modelParent);
 
         parentBolt = FindObjectOfType<ParentBolt>();
+        if (parentBolt == null)
+        {
+            Debug.LogError("ParentBolt is not found in the scene!");
+            return;
+        }
 
         spawnedModel.transform.localPosition = modelPrefab.transform.localPosition;
         spawnedModel.transform.localRotation = modelPrefab.transform.localRotation;
         spawnedModel.transform.localScale = modelPrefab.transform.localScale;
 
         mainModel = spawnedModel;
-
-        LevelUpdate();
-        AddMoney(10);
     }
+
     private void SaveModelDefaults(GameObject modelPrefab)
     {
         modelPosition = Vector3.zero;
@@ -69,44 +85,78 @@ public class GameSettings : MonoBehaviour
 
     public void ResetGame()
     {
+        resetting = true;
+        levelCompleted = false;
+
+        if (spawnedModel != null)
+            Destroy(spawnedModel);
+
         Initialize();
 
-        closeChest.gameObject.SetActive(true);
-        openChest.gameObject.SetActive(false);
+        if (parentBolt != null)
+        {
+            parentBolt.currentCountBolt = 0;
+            if (parentBolt.boltText != null)
+                parentBolt.boltText.text = parentBolt.currentCountBolt + " / " + parentBolt.boltAllCount;
+        }
 
-        parentBolt.currentCountBolt = 0;
-        parentBolt.boltText.text = parentBolt.currentCountBolt.ToString() + " / " + parentBolt.boltAllCount.ToString();
+        StartCoroutine(ClearResettingFlag());
+    }
+
+    private IEnumerator ClearResettingFlag()
+    {
+        yield return null; // Æä¸ì 1 êàäð
+        resetting = false;
     }
 
     public void LevelLogic()
     {
-        if (parentBolt.boltAllCount == parentBolt.currentCountBolt && parentBolt != null)
-        {
-            //closeChest.gameObject.SetActive(false);
-            //openChest.gameObject.SetActive(true);
+        if (resetting || levelCompleted) return;
 
+        if (parentBolt != null && parentBolt.boltAllCount == parentBolt.currentCountBolt)
+        {
+            levelCompleted = true;
             levelNumber++;
             LevelUpdate();
 
-            parentBolt.boltAllCount = parentBolt.GetBoltCount();
-            ResetGame();
-
+            if (parentBolt != null)
+            {
+                parentBolt.boltAllCount = parentBolt.GetBoltCount();
+                ResetGame();
+            }
         }
     }
 
     private void LevelUpdate()
     {
-        levelText.text = "Óðîâåíü: " + levelNumber.ToString();
+        foreach (var task in taskManager.tasks)
+        {
+            if (task.type == TaskType.DisassembleBuilding && task.completed)
+            {
+                Debug.Log("Çàäàíèå 'Ðàçîáðàòü ñòðîåíèå' âûïîëíåíî!");
+                return;
+            }
+        }
+
+        if (levelText != null)
+            levelText.text = "Óðîâåíü: " + levelNumber.ToString();
     }
+
 
     public void AddMoney(int value)
     {
-        ñurrentMoney += value;
-        moneyText.text = ñurrentMoney.ToString();
+        currentMoney += value;
+        if (moneyText != null)
+            moneyText.text = currentMoney.ToString();
     }
 
     private void Update()
     {
         LevelLogic();
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            ResetGame();
+        }
     }
 }
