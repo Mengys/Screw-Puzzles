@@ -1,2 +1,0 @@
-Build path: D:/Unity Projects D/Screw Jam/Screw-Puzzles/Builds
-Build number: 1
