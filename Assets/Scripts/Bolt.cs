@@ -73,6 +73,11 @@ public class Bolt : MonoBehaviour
                 RotateMode.FastBeyond360
             )
             .SetEase(Ease.InOutQuad)
-            .OnComplete(() => isEndAnimation = true);
+            .OnComplete(() =>
+            {
+                isEndAnimation = true;
+                Box box = FindObjectOfType<Box>();
+                //AddBoltToBox()
+            });
     }
 }

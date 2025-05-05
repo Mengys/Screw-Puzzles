@@ -255,10 +255,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &4450922512990680435
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -442,10 +443,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &9081964517805617414
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -597,10 +599,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &6962374153128230702
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -720,10 +723,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &8251431400434782144
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -843,10 +847,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &6657495108394971808
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -999,10 +1004,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &781946121839222054
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1122,10 +1128,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &1705284717817115186
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1245,10 +1252,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &4316015971614734112
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1432,10 +1440,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &5040192943271618622
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1555,10 +1564,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &1827846139807613049
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1678,10 +1688,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
-  moveDistance: 100
+  rotationDuration: 0.5
+  moveDistance: 150
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &1291924935189275179
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2171,7 +2182,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 1560234643675911015}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &2785744668190033164
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2240,7 +2251,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 7528392627460203470}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &8624209987950039146
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2309,7 +2320,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 8444452312799039300}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &5539545470039937719
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2378,7 +2389,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 7528392627460203470}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &529936923440775539
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2447,7 +2458,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 2799829981784727253}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &2095299628084172659
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2516,7 +2527,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 7528392627460203470}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &9155314275176972952
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2586,7 +2597,7 @@ MonoBehaviour:
   holdingBolts:
   - {fileID: 7372349498031441992}
   - {fileID: 6465240062707084179}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &516414509856283577
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2655,7 +2666,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 9043067440522672668}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &7506880095267397661
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2724,7 +2735,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 2799829981784727253}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &8980153767727544247
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2794,7 +2805,7 @@ MonoBehaviour:
   holdingBolts:
   - {fileID: 107124103778646278}
   - {fileID: 5167599814970295516}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &182602031433800955
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2863,7 +2874,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 5490101413421460028}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &1132708579662731169
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2932,7 +2943,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 1560234643675911015}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &4645533005107539030
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3001,7 +3012,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 2799829981784727253}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &3686162420710913193
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3070,7 +3081,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 2414232937822548911}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &4694373458307592516
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3139,7 +3150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 1560234643675911015}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &2346686323387800320
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3208,7 +3219,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 1560234643675911015}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &5917037882711220019
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3283,7 +3294,7 @@ MonoBehaviour:
   holdingBolts:
   - {fileID: 107124103778646278}
   - {fileID: 5167599814970295516}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &2187169427653256117
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3352,7 +3363,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdingBolts:
   - {fileID: 9043067440522672668}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &2293267166256435421
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3422,7 +3433,7 @@ MonoBehaviour:
   holdingBolts:
   - {fileID: 107124103778646278}
   - {fileID: 5167599814970295516}
-  detachForce: 300
+  detachForce: 500
 --- !u!54 &2484737149379621328
 Rigidbody:
   m_ObjectHideFlags: 0

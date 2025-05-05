@@ -98,10 +98,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
+  rotationDuration: 0.1
   moveDistance: 100
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &1747270250467717553
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -253,10 +254,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
+  rotationDuration: 0.1
   moveDistance: 100
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &1516218755855758783
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -376,10 +378,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
+  rotationDuration: 0.1
   moveDistance: 100
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &4050200813466221598
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -563,10 +566,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
+  rotationDuration: 0.1
   moveDistance: 100
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &6665276496876714326
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -849,10 +853,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAmount: 360
-  rotationDuration: 1
+  rotationDuration: 0.1
   moveDistance: 100
   moveDuration: 0.7
   isEndAnimation: 0
+  mesh: {fileID: 0}
 --- !u!65 &8127849660405485701
 BoxCollider:
   m_ObjectHideFlags: 0
