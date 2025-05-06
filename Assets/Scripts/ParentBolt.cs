@@ -6,11 +6,13 @@ using TMPro;
 public class ParentBolt : MonoBehaviour
 {
     [SerializeField] public List<Bolt> boltList = new List<Bolt>();
-    [SerializeField] private RectTransform targetObject;
     [SerializeField] public TextMeshProUGUI boltText;
 
     [HideInInspector] public int currentCountBolt = 0;
     [HideInInspector] public int boltAllCount = 0;
+
+    private Transform targetObject;
+    private Vector3 targetWorldPos;
 
     private void Start()
     {
@@ -20,9 +22,6 @@ public class ParentBolt : MonoBehaviour
             {
                 Bolt bolt = grandChild.GetComponent<Bolt>();
                 boltList.Add(bolt);
-
-                GameObject target = GameObject.FindGameObjectWithTag("Bolt Indicator");
-                targetObject = target.transform as RectTransform;
 
                 GameObject text = GameObject.FindGameObjectWithTag("Bolt Count");
                 boltText = text.GetComponent<TextMeshProUGUI>();
@@ -42,7 +41,18 @@ public class ParentBolt : MonoBehaviour
             {
                 bolt.isEndAnimation = false;
 
-                Vector3 targetWorldPos = targetObject.position;
+                BoxesManager boxManager = FindObjectOfType<BoxesManager>();
+                Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));
+
+                if(box != null)
+                {
+                    targetObject = box.gameObject.transform as RectTransform;
+                }
+                else
+                {
+                    targetObject = boltText.gameObject.transform as RectTransform;
+                }
+                targetWorldPos = targetObject.position;
 
                 bolt.transform.DOMove(targetWorldPos + new Vector3(0f, 0f, 5f), 1f)
                     .SetEase(Ease.InOutSine)
@@ -57,6 +67,7 @@ public class ParentBolt : MonoBehaviour
 
                         FindObjectOfType<TaskManager>().ProgressBoltTask(bolt.mesh.material.color);
 
+                        box.AddBoltToBox(box, bolt);
                     });
             }
         }

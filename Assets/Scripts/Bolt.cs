@@ -12,11 +12,10 @@ public class Bolt : MonoBehaviour
 
     [HideInInspector] public bool isEndAnimation = false;
     [HideInInspector] public MeshRenderer mesh;
+    [HideInInspector] public RectTransform targetObject;
 
     private bool isActivated = false;
     private Transform myTransform;
-
-    //[Header("Other Settings")]
 
     private RotateModel model;
     private SoundManager sound;
@@ -36,11 +35,11 @@ public class Bolt : MonoBehaviour
     {
         Color[] colors = new Color[]
         {
-        Color.red,
-        Color.green,
-        Color.blue,
-        Color.yellow,
-        Color.magenta
+            Color.red,
+            Color.green,
+            Color.blue,
+            Color.yellow,
+            Color.magenta
         };
 
         Color randomColor = colors[Random.Range(0, colors.Length)];
@@ -49,7 +48,6 @@ public class Bolt : MonoBehaviour
         material.color = randomColor;
         return material;
     }
-
 
     private void OnMouseDown()
     {
@@ -76,8 +74,21 @@ public class Bolt : MonoBehaviour
             .OnComplete(() =>
             {
                 isEndAnimation = true;
-                Box box = FindObjectOfType<Box>();
-                //AddBoltToBox()
             });
+    }
+
+    public string ToNameString(Color color)
+    {
+        if (color == Color.red) return "red";
+        if (color == Color.blue) return "blue";
+        if (color == Color.green) return "green";
+        if (color == Color.yellow) return "yellow";
+        if (color == Color.white) return "white";
+        if (color == Color.black) return "black";
+        if (color == Color.cyan) return "cyan";
+        if (color == Color.magenta) return "magenta";
+        if (color == Color.gray) return "gray";
+
+        return "#" + ColorUtility.ToHtmlStringRGB(color);
     }
 }

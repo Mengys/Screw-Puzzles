@@ -1,23 +1,24 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Box : MonoBehaviour
 {
-    public List<Bolt> bolts = new List<Bolt>();
+    public int countBox = 0;
+    public string color;
 
     [HideInInspector] public bool isComplete = false;
 
     public void AddBoltToBox(Box box, Bolt bolt)
     {
-        if (box.bolts.Count < 3)
+        if (box.countBox < 3)
         {
-            box.bolts.Add(bolt);
+            box.countBox++;
 
-            if (box.bolts.Count == 3)
+            if (box.countBox == 3)
             {
                 box.isComplete = true;
-                BoxesManager boxManger = GetComponentInParent<BoxesManager>();
-                boxManger.ChangeBox(this);
+
+                BoxesManager boxesManager = GetComponentInParent<BoxesManager>();
+                boxesManager.ChangeBox(this);
             }
         }
     }
