@@ -39,4 +39,10 @@ public class Box : MonoBehaviour
                 default: return null;
         }
     }
+
+    public bool HasFreeSpace()
+    {
+        return countBox < targets.Count;
+    }
+
 }

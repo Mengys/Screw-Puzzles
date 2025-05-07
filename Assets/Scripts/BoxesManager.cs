@@ -7,6 +7,7 @@ public class BoxesManager : MonoBehaviour
     public List<Box> currentBoxes = new List<Box>();
 
     [SerializeField] private List<Box> allBoxes = new List<Box>();
+    [SerializeField] private GameSettings game;
 
     public Box GetBoxByColor(string targetColor)
     {
@@ -21,17 +22,41 @@ public class BoxesManager : MonoBehaviour
 
     public void ChangeBox(Box currentBox)
     {
-        currentBox.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack).OnComplete(() =>
-        {
-            currentBox.gameObject.SetActive(false);
+        Sequence boxSequence = DOTween.Sequence();
 
-            Box newBox = GetRandomBox(currentBox);
+        Vector3 oldPosition = currentBox.transform.position;
+        Quaternion oldRotation = currentBox.transform.rotation;
+        Transform parent = currentBox.transform.parent;
 
-            newBox.transform.localScale = Vector3.zero;
-            newBox.gameObject.SetActive(true);
+        boxSequence.Append(currentBox.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack))
+            .AppendInterval(1f)
+            .AppendCallback(() =>
+            {
+                // Удалить старые цели
+                foreach (var t in currentBox.targets)
+                    Destroy(t.gameObject);
 
-            newBox.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
-        });
+                game.AddMoney(10);
+
+                // Удалить старый бокс
+                Destroy(currentBox.gameObject);
+
+                // Получить шаблон и нужный масштаб
+                Box newBoxTemplate = GetRandomBox(currentBox);
+                Vector3 prefabScale = newBoxTemplate.transform.localScale;
+
+                // Создать новый бокс с масштабом 0
+                Box newBox = Instantiate(newBoxTemplate, oldPosition, oldRotation, parent);
+                newBox.transform.localScale = Vector3.zero;
+                newBox.gameObject.SetActive(true);
+
+                // Обновить список
+                currentBoxes.Remove(currentBox);
+                currentBoxes.Add(newBox);
+
+                // Анимация масштабирования
+                newBox.transform.DOScale(prefabScale, 0.5f).SetEase(Ease.OutBack);
+            });
     }
 
     private Box GetRandomBox(Box excludeBox)

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
@@ -42,9 +42,9 @@ public class ParentBolt : MonoBehaviour
                 bolt.isEndAnimation = false;
 
                 BoxesManager boxManager = FindObjectOfType<BoxesManager>();
-                Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));
+                Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));             
 
-                if(box != null)
+                if (box != null)
                 {
                     targetObject = box.GetTargetFromBox(box) as RectTransform;
                 }
@@ -52,20 +52,36 @@ public class ParentBolt : MonoBehaviour
                 {
                     targetObject = boltText.gameObject.transform as RectTransform;
                 }
-                targetWorldPos = targetObject.position;
+
+                if (targetWorldPos == null)
+                    if (targetObject == null)
+                        targetObject = boltText.gameObject.transform as RectTransform;
+                    else
+                        targetObject = boltText.gameObject.transform as RectTransform;
+                else
+                    targetWorldPos = targetObject.transform.position;
 
                 bolt.transform.DOMove(targetWorldPos + new Vector3(0f, 0f, 5f), 1f)
                     .SetEase(Ease.InOutSine)
                     .OnComplete(() =>
                     {
-                        Destroy(bolt.gameObject);
-                        Destroy(bolt.transform.parent.gameObject);
+                        if (box == null)
+                            Destroy(bolt.gameObject);
+                        //Destroy(bolt.transform.parent.gameObject);
 
                         boltList.Remove(bolt);
                         currentCountBolt++;
                         boltText.text = currentCountBolt.ToString() + " / " + boltAllCount.ToString();
 
                         FindObjectOfType<TaskManager>().ProgressBoltTask(bolt.mesh.material.color);
+                        Quaternion startRotation = bolt.transform.localRotation;
+                        Quaternion targetRotation = new Quaternion(-0.541675329f, -0.454519421f, -0.454519421f, 0.541675329f);
+
+                        float t = 0f;
+                        DOVirtual.Float(0f, 1f, 0.5f, value =>
+                        {
+                            bolt.transform.localRotation = Quaternion.Slerp(startRotation, targetRotation, value);
+                        }).SetEase(Ease.OutSine);
 
                         box.AddBoltToBox(bolt);
                     });
@@ -77,4 +93,5 @@ public class ParentBolt : MonoBehaviour
     {
         return boltList.Count;
     }
+
 }
