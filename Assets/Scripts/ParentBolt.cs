@@ -46,7 +46,7 @@ public class ParentBolt : MonoBehaviour
 
                 if(box != null)
                 {
-                    targetObject = box.gameObject.transform as RectTransform;
+                    targetObject = box.GetTargetFromBox(box) as RectTransform;
                 }
                 else
                 {
@@ -67,7 +67,7 @@ public class ParentBolt : MonoBehaviour
 
                         FindObjectOfType<TaskManager>().ProgressBoltTask(bolt.mesh.material.color);
 
-                        box.AddBoltToBox(box, bolt);
+                        box.AddBoltToBox(bolt);
                     });
             }
         }
