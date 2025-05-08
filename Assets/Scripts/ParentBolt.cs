@@ -72,22 +72,27 @@ public class ParentBolt : MonoBehaviour
         BoxesManager boxManager = FindObjectOfType<BoxesManager>();
         Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));
 
-        targetObject = GetTargetTransform(box);
+        targetObject = GetTargetTransform(box, out Transform holeUsed);
         targetWorldPos = targetObject.transform.position;
+
+        // Сохраняем дырку, если используется
+        bolt.targetHole = holeUsed;
 
         bolt.transform.DOMove(targetWorldPos + new Vector3(0f, 0f, 5f), 1f)
             .SetEase(Ease.InOutSine)
             .OnComplete(() => OnBoltAnimationComplete(bolt, box));
     }
 
-    private Transform GetTargetTransform(Box box)
+    private Transform GetTargetTransform(Box box, out Transform usedHole)
     {
         if (box != null)
         {
+            usedHole = null;
             return box.GetTargetFromBox(box) as RectTransform;
         }
 
-        return holesManager.GetfreeHole() as RectTransform;
+        usedHole = holesManager.GetfreeHole() as Transform;
+        return usedHole;
     }
 
     private void OnBoltAnimationComplete(Bolt bolt, Box box)
@@ -100,8 +105,18 @@ public class ParentBolt : MonoBehaviour
         AnimateBoltRotation(bolt);
         SpawnShavings(bolt);
 
+        if (box != null)
+        {
+            bolt.transform.SetParent(box.transform);
+            box.AddBoltToBox(bolt);
+        }
+        else if (bolt.targetHole != null)
+        {
+            bolt.transform.SetParent(bolt.targetHole);
+            bolt.transform.localPosition = new Vector3(0f, 0f, 0.05f); // Смещение к игроку
+        }
+
         audioSource.Play();
-        box?.AddBoltToBox(bolt);
     }
 
     private void AnimateBoltRotation(Bolt bolt)

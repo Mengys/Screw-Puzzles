@@ -11,8 +11,10 @@ public class Bolt : MonoBehaviour
     [SerializeField] private float moveDuration = 2f;
 
     [HideInInspector] public bool isEndAnimation = false;
+    [HideInInspector] public bool isScrewing = false;
     [HideInInspector] public MeshRenderer mesh;
     [HideInInspector] public RectTransform targetObject;
+    [HideInInspector] public Transform targetHole;
 
     private bool isActivated = false;
     private Transform myTransform;
@@ -52,6 +54,8 @@ public class Bolt : MonoBehaviour
     private void OnMouseDown()
     {
         if (isActivated) return;
+
+        isScrewing = true;
 
         isActivated = true;
         BoltMoving();

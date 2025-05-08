@@ -6,16 +6,14 @@ public class HolesManager : MonoBehaviour
     public List<GameObject> holes = new List<GameObject>();
 
     [SerializeField] private GameObject gameOver;
-
-    private int nextFreeIndex = 0;
+    private int freeHoles = 5;
 
     public Transform GetfreeHole()
     {
-        if (nextFreeIndex < holes.Count)
+        if (freeHoles >= 0)
         {
-            Transform holeTransform = holes[nextFreeIndex].transform;
-            nextFreeIndex++;
-            return holeTransform;
+            freeHoles--;
+            return holes[freeHoles].transform;
         }
         else
         {

@@ -23,13 +23,28 @@ public class BoltDetection : MonoBehaviour
         if (holdingBolts.Count == 0)
         {
             Detach();
+            return;
+        }
+
+        bool allBoltsDone = true;
+        foreach (var bolt in holdingBolts)
+        {
+            if (bolt != null && !bolt.isScrewing)
+            {
+                allBoltsDone = false;
+                break;
+            }
+        }
+
+        if (allBoltsDone)
+        {
+            Detach();
         }
     }
 
     private void Detach()
     {
         isDetached = true;
-
 
         Rigidbody rb = gameObject.GetComponent<Rigidbody>();
         if (rb == null)
