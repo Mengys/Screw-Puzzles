@@ -7,15 +7,19 @@ public class ParentBolt : MonoBehaviour
 {
     [SerializeField] public List<Bolt> boltList = new List<Bolt>();
     [SerializeField] public TextMeshProUGUI boltText;
+    [SerializeField] public GameObject shavingsPrefab;
 
     [HideInInspector] public int currentCountBolt = 0;
     [HideInInspector] public int boltAllCount = 0;
 
     private Transform targetObject;
     private Vector3 targetWorldPos;
+    private AudioSource audioSource;
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+
         foreach (Transform child in transform)
         {
             foreach (Transform grandChild in child)
@@ -42,7 +46,7 @@ public class ParentBolt : MonoBehaviour
                 bolt.isEndAnimation = false;
 
                 BoxesManager boxManager = FindObjectOfType<BoxesManager>();
-                Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));             
+                Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));
 
                 if (box != null)
                 {
@@ -83,6 +87,13 @@ public class ParentBolt : MonoBehaviour
                             bolt.transform.localRotation = Quaternion.Slerp(startRotation, targetRotation, value);
                         }).SetEase(Ease.OutSine);
 
+                        GameObject shavings = Instantiate(shavingsPrefab, bolt.transform);
+                        shavings.transform.localPosition = new Vector3(0f, 0f, 0.05f); // или смещение (например, под болтом)
+
+                        Destroy(shavings, 0.7f);
+
+                        //if (targetObject = box.GetTargetFromBox(box) as RectTransform)
+                        audioSource.Play();
                         box.AddBoltToBox(bolt);
                     });
             }

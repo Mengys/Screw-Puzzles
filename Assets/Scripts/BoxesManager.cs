@@ -8,6 +8,7 @@ public class BoxesManager : MonoBehaviour
 
     [SerializeField] private List<Box> allBoxes = new List<Box>();
     [SerializeField] private GameSettings game;
+    [SerializeField] private GameObject shavingsPrefab;
 
     public Box GetBoxByColor(string targetColor)
     {
@@ -27,6 +28,11 @@ public class BoxesManager : MonoBehaviour
         Vector3 oldPosition = currentBox.transform.position;
         Quaternion oldRotation = currentBox.transform.rotation;
         Transform parent = currentBox.transform.parent;
+
+        GameObject shavings = Instantiate(shavingsPrefab, currentBox.transform);
+        shavings.transform.localPosition = new Vector3(0f, 0f, 0.05f);
+
+        Destroy(shavings, 0.7f);
 
         boxSequence.Append(currentBox.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack))
             .AppendInterval(1f)

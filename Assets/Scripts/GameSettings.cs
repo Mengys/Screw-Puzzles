@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using YG;
+//using YG;
 
 public class GameSettings : MonoBehaviour
 {
@@ -28,7 +28,7 @@ public class GameSettings : MonoBehaviour
     private ParentBolt parentBolt;
     [SerializeField] private GameObject gameParent;
     [SerializeField] private TaskManager taskManager;
-    [SerializeField] private YandexGame sdk;
+    //[SerializeField] private YandexGame sdk;
 
     private bool levelCompleted = false;
     private bool resetting = false;
@@ -88,7 +88,7 @@ public class GameSettings : MonoBehaviour
     public void ResetGame()
     {
         // ѕоказ рекламы перед перезапуском уровн€
-        sdk._FullscreenShow();
+        //sdk._FullscreenShow();
 
         resetting = true;
         levelCompleted = false;

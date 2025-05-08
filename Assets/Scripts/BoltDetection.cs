@@ -30,6 +30,7 @@ public class BoltDetection : MonoBehaviour
     {
         isDetached = true;
 
+
         Rigidbody rb = gameObject.GetComponent<Rigidbody>();
         if (rb == null)
             rb = gameObject.AddComponent<Rigidbody>();
@@ -38,5 +39,6 @@ public class BoltDetection : MonoBehaviour
 
         Vector3 randomDirection = (transform.position - transform.parent.position).normalized + Random.insideUnitSphere * 0.3f;
         rb.AddForce(randomDirection * detachForce);
+        transform.parent = null;
     }
 }
