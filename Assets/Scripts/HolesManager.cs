@@ -5,14 +5,22 @@ public class HolesManager : MonoBehaviour
 {
     public List<GameObject> holes = new List<GameObject>();
 
-    private int freeHoles = 5;
+    [SerializeField] private GameObject gameOver;
 
-    public Vector3 GetfreeHole()
+    private int nextFreeIndex = 0;
+
+    public Transform GetfreeHole()
     {
-        if (freeHoles >= 0)
+        if (nextFreeIndex < holes.Count)
         {
-            freeHoles--;
+            Transform holeTransform = holes[nextFreeIndex].transform;
+            nextFreeIndex++;
+            return holeTransform;
         }
-        return holes[freeHoles].transform.position;
+        else
+        {
+            gameOver.SetActive(true);
+            return null;
+        }
     }
 }

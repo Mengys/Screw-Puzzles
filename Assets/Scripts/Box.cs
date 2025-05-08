@@ -31,13 +31,10 @@ public class Box : MonoBehaviour
 
     public Transform GetTargetFromBox(Box box)
     {
-        switch (countBox)
-        {
-            case 0: return targets[0].transform;
-            case 1: return targets[1].transform;
-            case 2: return targets[2].transform;
-                default: return null;
-        }
+        if (countBox < targets.Count)
+            return targets[countBox];
+        else
+            return null;
     }
 
     public bool HasFreeSpace()

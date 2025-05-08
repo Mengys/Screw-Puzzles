@@ -15,94 +15,120 @@ public class ParentBolt : MonoBehaviour
     private Transform targetObject;
     private Vector3 targetWorldPos;
     private AudioSource audioSource;
+    private HolesManager holesManager;
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
+        InitializeManagers();
+        PopulateBoltList();
+    }
 
+    private void Update()
+    {
+        CheckBoltAnimations();
+    }
+
+    private void InitializeManagers()
+    {
+        holesManager = FindObjectOfType<HolesManager>();
+        audioSource = GetComponent<AudioSource>();
+        GameObject textObject = GameObject.FindGameObjectWithTag("Bolt Count");
+        boltText = textObject.GetComponent<TextMeshProUGUI>();
+    }
+
+    private void PopulateBoltList()
+    {
         foreach (Transform child in transform)
         {
             foreach (Transform grandChild in child)
             {
                 Bolt bolt = grandChild.GetComponent<Bolt>();
-                boltList.Add(bolt);
-
-                GameObject text = GameObject.FindGameObjectWithTag("Bolt Count");
-                boltText = text.GetComponent<TextMeshProUGUI>();
-
-                boltAllCount = boltList.Count;
-                boltText.text = currentCountBolt.ToString() + " / " + boltAllCount.ToString();
+                if (bolt != null)
+                {
+                    boltList.Add(bolt);
+                }
             }
         }
+
+        boltAllCount = boltList.Count;
+        UpdateBoltText();
     }
 
-    private void Update()
+    private void CheckBoltAnimations()
     {
         for (int i = boltList.Count - 1; i >= 0; i--)
         {
             Bolt bolt = boltList[i];
-            if (bolt.isEndAnimation)
-            {
-                bolt.isEndAnimation = false;
+            if (!bolt.isEndAnimation)
+                continue;
 
-                BoxesManager boxManager = FindObjectOfType<BoxesManager>();
-                Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));
-
-                if (box != null)
-                {
-                    targetObject = box.GetTargetFromBox(box) as RectTransform;
-                }
-                else
-                {
-                    targetObject = boltText.gameObject.transform as RectTransform;
-                }
-
-                if (targetWorldPos == null)
-                    if (targetObject == null)
-                        targetObject = boltText.gameObject.transform as RectTransform;
-                    else
-                        targetObject = boltText.gameObject.transform as RectTransform;
-                else
-                    targetWorldPos = targetObject.transform.position;
-
-                bolt.transform.DOMove(targetWorldPos + new Vector3(0f, 0f, 5f), 1f)
-                    .SetEase(Ease.InOutSine)
-                    .OnComplete(() =>
-                    {
-                        if (box == null)
-                            Destroy(bolt.gameObject);
-                        //Destroy(bolt.transform.parent.gameObject);
-
-                        boltList.Remove(bolt);
-                        currentCountBolt++;
-                        boltText.text = currentCountBolt.ToString() + " / " + boltAllCount.ToString();
-
-                        FindObjectOfType<TaskManager>().ProgressBoltTask(bolt.mesh.material.color);
-                        Quaternion startRotation = bolt.transform.localRotation;
-                        Quaternion targetRotation = new Quaternion(-0.541675329f, -0.454519421f, -0.454519421f, 0.541675329f);
-
-                        float t = 0f;
-                        DOVirtual.Float(0f, 1f, 0.5f, value =>
-                        {
-                            bolt.transform.localRotation = Quaternion.Slerp(startRotation, targetRotation, value);
-                        }).SetEase(Ease.OutSine);
-
-                        GameObject shavings = Instantiate(shavingsPrefab, bolt.transform);
-                        shavings.transform.localPosition = new Vector3(0f, 0f, 0.05f); // или смещение (например, под болтом)
-
-                        Destroy(shavings, 0.7f);
-
-                        //if (targetObject = box.GetTargetFromBox(box) as RectTransform)
-                        audioSource.Play();
-                        box.AddBoltToBox(bolt);
-                    });
-            }
+            bolt.isEndAnimation = false;
+            ProcessBoltAnimation(bolt);
         }
+    }
+
+    private void ProcessBoltAnimation(Bolt bolt)
+    {
+        BoxesManager boxManager = FindObjectOfType<BoxesManager>();
+        Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));
+
+        targetObject = GetTargetTransform(box);
+        targetWorldPos = targetObject.transform.position;
+
+        bolt.transform.DOMove(targetWorldPos + new Vector3(0f, 0f, 5f), 1f)
+            .SetEase(Ease.InOutSine)
+            .OnComplete(() => OnBoltAnimationComplete(bolt, box));
+    }
+
+    private Transform GetTargetTransform(Box box)
+    {
+        if (box != null)
+        {
+            return box.GetTargetFromBox(box) as RectTransform;
+        }
+
+        return holesManager.GetfreeHole() as RectTransform;
+    }
+
+    private void OnBoltAnimationComplete(Bolt bolt, Box box)
+    {
+        boltList.Remove(bolt);
+        currentCountBolt++;
+        UpdateBoltText();
+
+        FindObjectOfType<TaskManager>().ProgressBoltTask(bolt.mesh.material.color);
+        AnimateBoltRotation(bolt);
+        SpawnShavings(bolt);
+
+        audioSource.Play();
+        box?.AddBoltToBox(bolt);
+    }
+
+    private void AnimateBoltRotation(Bolt bolt)
+    {
+        Quaternion startRotation = bolt.transform.localRotation;
+        Quaternion targetRotation = new Quaternion(-0.541675329f, -0.454519421f, -0.454519421f, 0.541675329f);
+
+        DOVirtual.Float(0f, 1f, 0.5f, value =>
+        {
+            bolt.transform.localRotation = Quaternion.Slerp(startRotation, targetRotation, value);
+        }).SetEase(Ease.OutSine);
+    }
+
+    private void SpawnShavings(Bolt bolt)
+    {
+        GameObject shavings = Instantiate(shavingsPrefab, bolt.transform);
+        shavings.transform.localPosition = new Vector3(0f, 0f, 0.05f);
+        Destroy(shavings, 0.7f);
+    }
+
+    private void UpdateBoltText()
+    {
+        boltText.text = $"{currentCountBolt} / {boltAllCount}";
     }
 
     public int GetBoltCount()
     {
         return boltList.Count;
     }
-
 }
