@@ -12,7 +12,8 @@ public class GameSettings : MonoBehaviour
 
     [Header("Money Settings")]
     [SerializeField] private TextMeshProUGUI moneyText;
-    private int currentMoney;
+    [HideInInspector] public int currentLevelEarnings = 0;
+    [HideInInspector] public int currentMoney;
 
     [Header("Model Settings")]
     [SerializeField] private GameObject mainModel;
@@ -28,6 +29,8 @@ public class GameSettings : MonoBehaviour
     private ParentBolt parentBolt;
     [SerializeField] private GameObject gameParent;
     [SerializeField] private TaskManager taskManager;
+    [SerializeField] private EndLevel endLevel;
+    [SerializeField] private GameObject endGame;
     //[SerializeField] private YandexGame sdk;
 
     private bool levelCompleted = false;
@@ -90,6 +93,11 @@ public class GameSettings : MonoBehaviour
         // ѕоказ рекламы перед перезапуском уровн€
         //sdk._FullscreenShow();
 
+        endGame.SetActive(false);
+
+        FindObjectOfType<HolesManager>().ClearHoles();
+        FindObjectOfType<BoxesManager>().ClearBoxes();
+
         resetting = true;
         levelCompleted = false;
 
@@ -116,10 +124,15 @@ public class GameSettings : MonoBehaviour
 
     public void LevelLogic()
     {
-        if (resetting || levelCompleted) return;
+        if (resetting || levelCompleted)
+        {
+            return;
+        }
 
         if (parentBolt != null && parentBolt.boltAllCount == parentBolt.currentCountBolt)
         {
+            endLevel.StartRoulette();
+
             levelCompleted = true;
             levelNumber++;
             LevelUpdate();
@@ -127,7 +140,7 @@ public class GameSettings : MonoBehaviour
             if (parentBolt != null)
             {
                 parentBolt.boltAllCount = parentBolt.GetBoltCount();
-                ResetGame();
+                //ResetGame();
             }
         }
     }
@@ -151,8 +164,9 @@ public class GameSettings : MonoBehaviour
     public void AddMoney(int value)
     {
         currentMoney += value;
-        if (moneyText != null)
-            moneyText.text = currentMoney.ToString();
+        currentLevelEarnings += value;
+
+        moneyText.text = currentMoney.ToString();
     }
 
     private void Update()

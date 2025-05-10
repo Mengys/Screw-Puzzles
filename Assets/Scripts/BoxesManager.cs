@@ -71,8 +71,18 @@ public class BoxesManager : MonoBehaviour
         do
         {
             randomBox = allBoxes[Random.Range(0, allBoxes.Count)];
-        } while (randomBox == excludeBox);
+        } while (randomBox.color == excludeBox.color);
 
         return randomBox;
+    }
+
+    public void ClearBoxes()
+    {
+        Bolt[] bolts = GetComponentsInChildren<Bolt>();
+        foreach (var bolt in bolts)
+        {
+            if (bolt != null)
+                Destroy(bolt.gameObject);
+        }
     }
 }

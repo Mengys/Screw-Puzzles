@@ -73,7 +73,9 @@ public class ParentBolt : MonoBehaviour
         Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));
 
         targetObject = GetTargetTransform(box, out Transform holeUsed);
-        targetWorldPos = targetObject.transform.position;
+
+        if(targetObject == null)
+            targetObject = GetTargetTransform(box, out holeUsed);
 
         // Сохраняем дырку, если используется
         bolt.targetHole = holeUsed;
@@ -114,10 +116,17 @@ public class ParentBolt : MonoBehaviour
         {
             bolt.transform.SetParent(bolt.targetHole);
             bolt.transform.localPosition = new Vector3(0f, 0f, 0.05f); // Смещение к игроку
+
+            if (holesManager != null)
+            {
+                holesManager.bolts.Add(bolt);
+                holesManager.AnimateHoleBoltRotation(bolt);
+            }
         }
 
         audioSource.Play();
     }
+
 
     private void AnimateBoltRotation(Bolt bolt)
     {

@@ -5,6 +5,7 @@ public class BoltDetection : MonoBehaviour
 {
     [SerializeField] private List<Bolt> holdingBolts = new List<Bolt>();
     [SerializeField] private float detachForce = 200f;
+    [SerializeField] private float destroyDelay = 5f;
 
     private bool isDetached = false;
 
@@ -55,5 +56,7 @@ public class BoltDetection : MonoBehaviour
         Vector3 randomDirection = (transform.position - transform.parent.position).normalized + Random.insideUnitSphere * 0.3f;
         rb.AddForce(randomDirection * detachForce);
         transform.parent = null;
+
+        Destroy(gameObject, destroyDelay);
     }
 }
