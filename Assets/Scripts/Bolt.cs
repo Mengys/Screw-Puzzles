@@ -59,7 +59,7 @@ public class Bolt : MonoBehaviour
 
         isActivated = true;
         BoltMoving();
-        model.StopRotation();
+        //model.StopRotation();
     }
 
     private void BoltMoving()

@@ -80,6 +80,8 @@ public class ParentBolt : MonoBehaviour
         // Сохраняем дырку, если используется
         bolt.targetHole = holeUsed;
 
+        bolt.GetComponent<Collider>().enabled = false;
+
         bolt.transform.DOMove(targetWorldPos + new Vector3(0f, 0f, 5f), 1f)
             .SetEase(Ease.InOutSine)
             .OnComplete(() => OnBoltAnimationComplete(bolt, box));

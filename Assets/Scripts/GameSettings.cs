@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using DG.Tweening;
 //using YG;
 
 public class GameSettings : MonoBehaviour
@@ -14,6 +15,9 @@ public class GameSettings : MonoBehaviour
     [SerializeField] private TextMeshProUGUI moneyText;
     [HideInInspector] public int currentLevelEarnings = 0;
     [HideInInspector] public int currentMoney;
+    [Header("Money Animation")]
+    [SerializeField] private RectTransform canvasRoot; // Canvas для UI
+    [SerializeField] private TextMeshProUGUI flyingTextPrefab; // Префаб "летающего текста"
 
     [Header("Model Settings")]
     [SerializeField] private GameObject mainModel;
@@ -163,11 +167,38 @@ public class GameSettings : MonoBehaviour
 
     public void AddMoney(int value)
     {
-        currentMoney += value;
         currentLevelEarnings += value;
 
-        moneyText.text = currentMoney.ToString();
+        AnimateMoneyGain(value);
     }
+
+
+    private void AnimateMoneyGain(int value)
+    {
+        int startMoney = currentMoney;
+        int targetMoney = currentMoney + value;
+        currentMoney = targetMoney;
+
+        // 1. Плавная анимация счета
+        DOTween.To(() => startMoney, x =>
+        {
+            moneyText.text = x.ToString();
+        }, targetMoney, 1.5f).SetEase(Ease.OutCubic); // увеличена длительность
+
+        // 2. Летающий текст слева
+        var flyingText = Instantiate(flyingTextPrefab, canvasRoot);
+        flyingText.text = $"+{value}";
+
+        flyingText.transform.position = moneyText.transform.position + new Vector3(-150f, 0, 0);
+
+        flyingText.DOFade(0f, 1.5f).SetEase(Ease.OutQuad); // увеличена длительность
+        flyingText.transform.DOMoveX(moneyText.transform.position.x, 1.5f)
+            .SetEase(Ease.OutCubic)
+            .OnComplete(() => Destroy(flyingText.gameObject));
+    }
+
+
+
 
     private void Update()
     {
@@ -180,4 +211,13 @@ public class GameSettings : MonoBehaviour
     }
 
     //fullReset
+
+    public void TEST_NextLevel()
+    {
+        levelCompleted = true;
+        levelNumber++;
+        LevelUpdate();
+        parentBolt.boltAllCount = parentBolt.GetBoltCount();
+        ResetGame();
+    }
 }

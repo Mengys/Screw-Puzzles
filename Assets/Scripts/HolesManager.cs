@@ -7,7 +7,8 @@ public class HolesManager : MonoBehaviour
     public List<GameObject> holes = new List<GameObject>();
     public List<Bolt> bolts = new List<Bolt>();
 
-    [SerializeField] private GameObject gameOver;
+    [SerializeField] private GameSettings gameOver;
+    [SerializeField] private EndLevel endLevel;
     [SerializeField] private GameObject shavingsPrefab;
 
     private int freeHoles = 5;
@@ -27,7 +28,8 @@ public class HolesManager : MonoBehaviour
         }
 
         Debug.LogWarning("Нет свободных дырок! Игра окончена.");
-        gameOver.SetActive(true);
+        gameOver.gameObject.SetActive(true);
+        endLevel.gameObject.SetActive(false);
         return null;
     }
 
