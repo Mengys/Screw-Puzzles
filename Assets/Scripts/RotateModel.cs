@@ -11,7 +11,6 @@ public class RotateModel : MonoBehaviour
     private Vector3 lastMousePosition;
     private Vector2 lastTouchPosition;
 
-
     private void Start()
     {
         StartRotation();
