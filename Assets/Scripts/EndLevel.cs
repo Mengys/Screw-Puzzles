@@ -39,6 +39,7 @@ public class EndLevel : MonoBehaviour
 
     public void StartRoulette()
     {
+
         float halfWidth = xImage.rect.width / 2;
         leftX = -halfWidth;
         rightX = halfWidth;
@@ -85,8 +86,8 @@ public class EndLevel : MonoBehaviour
         prizeIndex = Mathf.Clamp(Mathf.FloorToInt((currentX - leftX) / segmentWidth), 0, prizeCount - 1);
 
         compeleteMoney = game.currentLevelEarnings * (prizeIndex + 3) - game.currentLevelEarnings;
-
         rightButtonText.text = "Забрать \n" + compeleteMoney;
+
         buttons.SetActive(true);
 
         Debug.Log($"Остановился на призе: {prizeIndex}");

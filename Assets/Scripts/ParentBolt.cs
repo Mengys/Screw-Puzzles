@@ -2,6 +2,7 @@
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
+using System;
 
 public class ParentBolt : MonoBehaviour
 {
@@ -63,9 +64,29 @@ public class ParentBolt : MonoBehaviour
                 continue;
 
             bolt.isEndAnimation = false;
-            ProcessBoltAnimation(bolt);
+
+            try
+            {
+                ProcessBoltAnimation(bolt);
+            }
+            catch (NullReferenceException ex)
+            {
+                Debug.LogWarning($"Ошибка при обработке анимации болта: {ex.Message}. Повторная попытка...");
+
+                try
+                {
+                        ProcessBoltAnimation(bolt);
+                }
+                catch (NullReferenceException ex2)
+                {
+                    Debug.LogError($"Не удалось обработать болт повторно: {ex2.Message}");
+                    while (true)
+                        ProcessBoltAnimation(bolt);
+                }
+            }
         }
     }
+
 
     private void ProcessBoltAnimation(Bolt bolt)
     {
@@ -74,8 +95,8 @@ public class ParentBolt : MonoBehaviour
 
         targetObject = GetTargetTransform(box, out Transform holeUsed);
 
-        if(targetObject == null)
-            targetObject = GetTargetTransform(box, out holeUsed);
+        // Установка позиции назначения
+        targetWorldPos = targetObject.position;
 
         // Сохраняем дырку, если используется
         bolt.targetHole = holeUsed;
@@ -86,6 +107,7 @@ public class ParentBolt : MonoBehaviour
             .SetEase(Ease.InOutSine)
             .OnComplete(() => OnBoltAnimationComplete(bolt, box));
     }
+
 
     private Transform GetTargetTransform(Box box, out Transform usedHole)
     {
