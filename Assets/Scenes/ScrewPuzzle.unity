@@ -3228,6 +3228,7 @@ MonoBehaviour:
   slider: {fileID: 348005030}
   minZoom: 40
   maxZoom: 60
+  pinchSensitivity: 0.1
 --- !u!1 &987041815
 GameObject:
   m_ObjectHideFlags: 0

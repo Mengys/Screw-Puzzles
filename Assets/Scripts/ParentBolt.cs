@@ -139,7 +139,7 @@ public class ParentBolt : MonoBehaviour
         else if (bolt.targetHole != null)
         {
             bolt.transform.SetParent(bolt.targetHole);
-            bolt.transform.localPosition = new Vector3(0f, 0f, 0.05f); // Смещение к игроку
+            bolt.transform.localPosition = new Vector3(0f, 0f, -20f); // Смещение к игроку
 
             if (holesManager != null)
             {
