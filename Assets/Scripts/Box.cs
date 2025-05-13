@@ -10,6 +10,15 @@ public class Box : MonoBehaviour
 
     [HideInInspector] public bool isComplete = false;
 
+    private RectTransform rectTransform;
+    private Vector3 originalScale;
+
+    private void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+        originalScale = rectTransform.localScale;
+    }
+
     public void AddBoltToBox(Bolt bolt)
     {
         if (countBox >= targets.Count) return;
@@ -17,17 +26,21 @@ public class Box : MonoBehaviour
         Transform targetPoint = targets[countBox];
         countBox++;
 
-        // Переместить болт к нужной точке (локально относительно коробки)
-        bolt.transform.SetParent(this.transform); // Привязать болт к коробке
+        bolt.transform.SetParent(this.transform);
         bolt.transform.DOMove(targetPoint.position, 0.5f)
             .SetEase(Ease.OutBack);
 
-        if (countBox == targets.Count)
-        {
-            isComplete = true;
-            GetComponentInParent<BoxesManager>().ChangeBox(this);
-        }
+        rectTransform.DOKill();
+        rectTransform.localScale = originalScale;
+
+        rectTransform.DOScale(originalScale * 1.1f, 0.1f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() =>
+            {
+                rectTransform.DOScale(originalScale, 0.1f).SetEase(Ease.InQuad);
+            });
     }
+
 
     public Transform GetTargetFromBox(Box box)
     {
