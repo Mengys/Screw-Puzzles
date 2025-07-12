@@ -10,6 +10,8 @@ public class HolesManager : MonoBehaviour
     [SerializeField] private GameSettings gameOver;
     [SerializeField] private EndLevel endLevel;
     [SerializeField] private GameObject shavingsPrefab;
+    [SerializeField] private GameObject boltBox;
+    [SerializeField] private GameObject WarningOneHole;
 
     private int freeHoles = 5;
     private AudioSource audioSource;
@@ -23,7 +25,15 @@ public class HolesManager : MonoBehaviour
     {
         if (freeHoles > 0 && holes.Count >= freeHoles)
         {
+            
             freeHoles--;
+            if (freeHoles == 1) WarningOneHole.SetActive(true);
+
+            if (freeHoles == 0) {
+                GameManager.Instance.EnableRestart();
+                return holes[0].transform;
+            }
+
             return holes[freeHoles].transform;
         }
 
@@ -35,10 +45,51 @@ public class HolesManager : MonoBehaviour
 
     private void Update()
     {
-        CheckAndMoveBoltsToBoxes();
+        CheckAndMoveBoltsToBoxesFromBoltBox(boltBox.GetComponent<BoltBox>().bolts);
+        CheckAndMoveBoltsToBoxes(bolts);
     }
 
-    private void CheckAndMoveBoltsToBoxes()
+    private void CheckAndMoveBoltsToBoxesFromBoltBox(List<Bolt> bolts) {
+        if (bolts.Count == 0) return;
+
+        BoxesManager boxManager = FindObjectOfType<BoxesManager>();
+        TaskManager taskManager = FindObjectOfType<TaskManager>();
+
+        for (int i = bolts.Count - 1; i >= 0; i--) {
+            Bolt bolt = bolts[i];
+            Box targetBox = boxManager.GetBoxByColor(bolt.GetColorName());
+
+            if (targetBox != null) {
+                bolts.RemoveAt(i);
+
+                Vector3 targetPos = targetBox.GetTargetFromBox(targetBox).position;
+
+                bolt.transform.DOScale(1325f, 0.5f);
+                bolt.transform.DOMove(targetPos + new Vector3(0f, 0f, 5f), 1f)
+                    .SetEase(Ease.InOutSine)
+                    .OnComplete(() => {
+                        // Перемещаем болт в коробку
+                        bolt.transform.SetParent(targetBox.transform);
+                        bolt.transform.localPosition = Vector3.zero;
+                        targetBox.AddBoltToBox(bolt);
+
+                        // Обновляем TaskManager
+                        taskManager.ProgressBoltTask(bolt.GetColorEnum());
+
+                        // Анимация поворота
+                        AnimateBoltRotation(bolt);
+
+                        // Эффект стружки
+                        SpawnShavings(bolt);
+
+                        // Звук
+                        audioSource.Play();
+                    });
+            }
+        }
+    }
+
+    private void CheckAndMoveBoltsToBoxes(List<Bolt> bolts)
     {
         if (bolts.Count == 0) return;
 
@@ -48,29 +99,33 @@ public class HolesManager : MonoBehaviour
         for (int i = bolts.Count - 1; i >= 0; i--)
         {
             Bolt bolt = bolts[i];
-            Box targetBox = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));
+            Box targetBox = boxManager.GetBoxByColor(bolt.GetColorName());
 
             if (targetBox != null)
             {
                 bolts.RemoveAt(i);
                 freeHoles++;
 
-                Vector3 targetPos = targetBox.GetTargetFromBox(targetBox).position;
+                var target = targetBox.GetTargetFromBox(targetBox);
+                Vector3 targetPos = target.position;
+                var targetRotation = target.rotation.eulerAngles;
 
+                //bolt.transform.DORotate(targetRotation + new Vector3(270f, 0, 0), 0.5f, RotateMode.Fast).SetEase(Ease.InOutSine);
+                bolt.transform.DOScale(1325f, 0.5f);
                 bolt.transform.DOMove(targetPos + new Vector3(0f, 0f, 5f), 1f)
                     .SetEase(Ease.InOutSine)
                     .OnComplete(() =>
                     {
                         // Перемещаем болт в коробку
                         bolt.transform.SetParent(targetBox.transform);
-                        bolt.transform.localPosition = Vector3.zero;
+                        //bolt.transform.localPosition = Vector3.zero;
                         targetBox.AddBoltToBox(bolt);
 
                         // Обновляем TaskManager
-                        taskManager.ProgressBoltTask(bolt.mesh.material.color);
+                        taskManager.ProgressBoltTask(bolt.GetColorEnum());
 
                         // Анимация поворота
-                        AnimateBoltRotation(bolt);
+                        //AnimateBoltRotation(bolt);
 
                         // Эффект стружки
                         SpawnShavings(bolt);
@@ -106,10 +161,12 @@ public class HolesManager : MonoBehaviour
         Quaternion targetRotation = new Quaternion(-1f, 0f, 0f, 0f);
 
         Vector3 startPosition = bolt.transform.localPosition;
-        Vector3 targetPosition = startPosition + new Vector3(0f, 0f, 80f); // смещение назад по оси Z
+        Vector3 targetPosition = new Vector3(0f, 0f, 60f);
+        //Vector3 targetPosition = startPosition + new Vector3(0f, 0f, 80f); // смещение назад по оси Z
 
-        DOVirtual.Float(0f, 1f, 0.5f, value =>
-        {
+        bolt.transform.DOScale(1200, 0.5f);
+
+        DOVirtual.Float(0f, 1f, 0.5f, value => {
             bolt.transform.localRotation = Quaternion.Slerp(startRotation, targetRotation, value);
             bolt.transform.localPosition = Vector3.Lerp(startPosition, targetPosition, value);
         }).SetEase(Ease.OutSine);
@@ -138,4 +195,22 @@ public class HolesManager : MonoBehaviour
         freeHoles = 5;
     }
 
+    public void SendBoltsToBoltBox() {
+        for (int i = 0; i < bolts.Count; i++) {
+            boltBox.GetComponent<BoltBox>().AddBolt(bolts[i]);
+
+            Sequence sequence = DOTween.Sequence();
+            sequence
+                .Append(bolts[i].gameObject.transform.DOMove(bolts[i].gameObject.transform.position + Vector3.back * 3, 0.15f).SetEase(Ease.InOutSine))
+                .Join(bolts[i].gameObject.transform.DORotate(new Vector3(0, 180, 0), 0.15f, RotateMode.Fast).SetEase(Ease.InOutSine))
+                .Append(bolts[i].gameObject.transform.DOMove(boltBox.transform.position, 1f).SetEase(Ease.InOutSine))
+                .Join(bolts[i].gameObject.transform.DOScale(0, 1f).SetEase(Ease.InBack));
+        }
+        bolts.Clear();
+        freeHoles = 5;
+    }
+
+    public int FreeHolesCount() {
+        return freeHoles;
+    }
 }

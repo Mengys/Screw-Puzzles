@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,8 +6,8 @@ public class CameraZoom : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Slider slider;
-    [SerializeField] private float minZoom = 5f;
-    [SerializeField] private float maxZoom = 20f;
+    [SerializeField] private float minZoom = 40f;
+    [SerializeField] private float maxZoom = 60f;
     [SerializeField] private float pinchSensitivity = 0.1f;
 
     private float currentZoom;
@@ -32,16 +33,15 @@ public class CameraZoom : MonoBehaviour
     {
         currentZoom = Mathf.Lerp(minZoom, maxZoom, 1f - value);
         ApplyZoom(currentZoom);
+        var tutorial = FindFirstObjectByType<TutorialStart>();
+        if (tutorial != null) tutorial.HideTutorial();
     }
 
     private void ApplyZoom(float zoom)
     {
-        if (mainCamera.orthographic)
-        {
+        if (mainCamera.orthographic) {
             mainCamera.orthographicSize = zoom;
-        }
-        else
-        {
+        } else {
             mainCamera.fieldOfView = zoom;
         }
 
@@ -71,6 +71,7 @@ public class CameraZoom : MonoBehaviour
             currentZoom = Mathf.Clamp(currentZoom, minZoom, maxZoom);
 
             ApplyZoom(currentZoom);
+            FindFirstObjectByType<TutorialStart>().HideTutorial();
         }
     }
 }

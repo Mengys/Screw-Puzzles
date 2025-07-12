@@ -9,13 +9,13 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private Image backgroundIcon;
     [SerializeField] private Image sfxIcon;
 
-    private bool isSFXEnabled = true;
-    private bool isBackgroundEnabled = true;
+    public bool isSFXEnabled = true;
+    public bool isBackgroundEnabled = true;
 
     private void Awake()
     {
-        sfxIcon.gameObject.SetActive(!isSFXEnabled);
-        backgroundIcon.gameObject.SetActive(!isBackgroundEnabled);
+        //sfxIcon.gameObject.SetActive(!isSFXEnabled);
+        //backgroundIcon.gameObject.SetActive(!isBackgroundEnabled);
 
         sfxSource.gameObject.SetActive(isSFXEnabled);
         backgroundMusic.gameObject.SetActive(isBackgroundEnabled);
@@ -35,7 +35,7 @@ public class SoundManager : MonoBehaviour
     {
         isSFXEnabled = !isSFXEnabled;
 
-        sfxIcon.gameObject.SetActive(!isSFXEnabled);
+        //sfxIcon.gameObject.SetActive(!isSFXEnabled);
         sfxSource.gameObject.SetActive(isSFXEnabled);
     }
 
@@ -43,7 +43,7 @@ public class SoundManager : MonoBehaviour
     {
         isBackgroundEnabled = !isBackgroundEnabled;
 
-        backgroundIcon.gameObject.SetActive(!isBackgroundEnabled);
+        //backgroundIcon.gameObject.SetActive(!isBackgroundEnabled);
         backgroundMusic.gameObject.SetActive(isBackgroundEnabled);
 
         if (isBackgroundEnabled)

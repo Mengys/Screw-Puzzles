@@ -3,6 +3,10 @@ using UnityEngine;
 using DG.Tweening;
 using TMPro;
 using System;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
+using System.Collections;
+using static UnityEngine.GraphicsBuffer;
 
 public class ParentBolt : MonoBehaviour
 {
@@ -18,6 +22,8 @@ public class ParentBolt : MonoBehaviour
     private AudioSource audioSource;
     private HolesManager holesManager;
 
+    List<Action> actions = new List<Action>();
+
     private void Start()
     {
         InitializeManagers();
@@ -27,6 +33,10 @@ public class ParentBolt : MonoBehaviour
     private void Update()
     {
         CheckBoltAnimations();
+
+        foreach (var action in actions) {
+            action();
+        }
     }
 
     private void InitializeManagers()
@@ -37,22 +47,31 @@ public class ParentBolt : MonoBehaviour
         boltText = textObject.GetComponent<TextMeshProUGUI>();
     }
 
-    private void PopulateBoltList()
-    {
-        foreach (Transform child in transform)
-        {
-            foreach (Transform grandChild in child)
-            {
-                Bolt bolt = grandChild.GetComponent<Bolt>();
-                if (bolt != null)
-                {
-                    boltList.Add(bolt);
-                }
+    private void PopulateBoltList() {
+        foreach (Transform child in transform) {
+
+            Bolt bolt = child.GetComponent<Bolt>();
+            if (bolt != null) {
+                boltList.Add(bolt);
             }
         }
 
         boltAllCount = boltList.Count;
         UpdateBoltText();
+    }
+
+    public void UseMagnet() {
+        var boxesManager = FindObjectOfType<BoxesManager>();
+        var box = boxesManager.GetRandomBox();
+        var color = box.color;
+        var freeHoles = 3 - box.boltCount;
+
+        foreach (var bolt in boltList) {
+            if (freeHoles > 0 && color == bolt.GetColorName()) {
+                freeHoles--;
+                bolt.MagnetBolt();
+            }
+        }
     }
 
     private void CheckBoltAnimations()
@@ -90,24 +109,33 @@ public class ParentBolt : MonoBehaviour
 
     private void ProcessBoltAnimation(Bolt bolt)
     {
-        BoxesManager boxManager = FindObjectOfType<BoxesManager>();
-        Box box = boxManager.GetBoxByColor(bolt.ToNameString(bolt.mesh.material.color));
+        BoxesManager boxManager = FindFirstObjectByType<BoxesManager>();
+        Box box = boxManager.GetBoxByColor(bolt.GetColorName());
 
-        targetObject = GetTargetTransform(box, out Transform holeUsed);
+        var targetObject = GetTargetTransform(box, out Transform holeUsed);
 
         // Установка позиции назначения
         targetWorldPos = targetObject.position;
+        var targetRotation = targetObject.rotation.eulerAngles;
 
         // Сохраняем дырку, если используется
         bolt.targetHole = holeUsed;
 
         bolt.GetComponent<Collider>().enabled = false;
 
-        bolt.transform.DOMove(targetWorldPos + new Vector3(0f, 0f, 5f), 1f)
+        if (holeUsed != null) {
+            var rotateTween = bolt.transform.DORotate(targetRotation + new Vector3(180f, 0, 0), 0.5f, RotateMode.Fast).SetEase(Ease.InOutSine);
+        } else {
+            var rotateTween = bolt.transform.DORotate(targetRotation, 0.5f, RotateMode.Fast).SetEase(Ease.InOutSine);
+        }
+
+        Vector3 move = (targetWorldPos - bolt.transform.position);
+        bolt.transform.Translate(move);
+
+        var moveTween = bolt.transform.DOMove(targetWorldPos + new Vector3(0f, 0f, -10f), 0.5f)
             .SetEase(Ease.InOutSine)
             .OnComplete(() => OnBoltAnimationComplete(bolt, box));
     }
-
 
     private Transform GetTargetTransform(Box box, out Transform usedHole)
     {
@@ -127,8 +155,8 @@ public class ParentBolt : MonoBehaviour
         currentCountBolt++;
         UpdateBoltText();
 
-        FindObjectOfType<TaskManager>().ProgressBoltTask(bolt.mesh.material.color);
-        AnimateBoltRotation(bolt);
+        FindObjectOfType<TaskManager>().ProgressBoltTask(bolt.GetColorEnum());
+        //AnimateBoltRotation(bolt);
         SpawnShavings(bolt);
 
         if (box != null)
@@ -139,7 +167,7 @@ public class ParentBolt : MonoBehaviour
         else if (bolt.targetHole != null)
         {
             bolt.transform.SetParent(bolt.targetHole);
-            bolt.transform.localPosition = new Vector3(0f, 0f, -20f); // Смещение к игроку
+            //bolt.transform.localPosition = new Vector3(0f, 0f, -20f); // Смещение к игроку
 
             if (holesManager != null)
             {
@@ -151,14 +179,12 @@ public class ParentBolt : MonoBehaviour
         audioSource.Play();
     }
 
-
     private void AnimateBoltRotation(Bolt bolt)
     {
         Quaternion startRotation = bolt.transform.localRotation;
         Quaternion targetRotation = new Quaternion(-0.541675329f, -0.454519421f, -0.454519421f, 0.541675329f);
 
-        DOVirtual.Float(0f, 1f, 0.5f, value =>
-        {
+        DOVirtual.Float(0f, 1f, 0.5f, value => {
             bolt.transform.localRotation = Quaternion.Slerp(startRotation, targetRotation, value);
         }).SetEase(Ease.OutSine);
     }

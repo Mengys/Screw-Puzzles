@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 //using YG;
 
 public class GameSettings : MonoBehaviour
@@ -14,7 +15,7 @@ public class GameSettings : MonoBehaviour
     [Header("Money Settings")]
     [SerializeField] private TextMeshProUGUI moneyText;
     [HideInInspector] public int currentLevelEarnings = 0;
-    [HideInInspector] public int currentMoney;
+    [HideInInspector] public int CurrentMoney;
     [Header("Money Animation")]
     [SerializeField] private RectTransform canvasRoot; // Canvas для UI
     [SerializeField] private TextMeshProUGUI flyingTextPrefab; // Префаб "летающего текста"
@@ -35,16 +36,37 @@ public class GameSettings : MonoBehaviour
     [SerializeField] private TaskManager taskManager;
     [SerializeField] private EndLevel endLevel;
     [SerializeField] private GameObject endGame;
+    [SerializeField] private GameObject boxManager;
     //[SerializeField] private YandexGame sdk;
 
+    [SerializeField] private BoostsManager boostsManager;
+
+    [HideInInspector] public bool IsVibrationEnable = true;
     private bool levelCompleted = false;
     private bool resetting = false;
+    private float startLevelTime = 0;
 
     private void Awake()
     {
+        currentLevelEarnings = 10;
+        GetCurrentLevelNumberFromPrefs();
         Initialize();
         LevelUpdate();
-        AddMoney(10);
+        AddMoney(PlayerPrefs.GetInt("Money"));
+    }
+
+    public void ChangeVibration() {
+        IsVibrationEnable = !IsVibrationEnable;
+    }
+
+    private void GetCurrentLevelNumberFromPrefs() {
+        if (PlayerPrefs.HasKey("CurrentLevel")) {
+            levelNumber = PlayerPrefs.GetInt("CurrentLevel");
+        }
+    }
+    
+    public void DeletePrefs() {
+        PlayerPrefs.DeleteAll();
     }
 
     private void Initialize()
@@ -66,10 +88,25 @@ public class GameSettings : MonoBehaviour
         SaveModelDefaults(models[index]);
 
         if (spawnedModel != null)
-            Destroy(spawnedModel);
+            DestroyImmediate(spawnedModel);
+
 
         GameObject modelPrefab = models[index];
         spawnedModel = Instantiate(modelPrefab, modelParent);
+        FindAnyObjectByType<ModelRotation>().ResetModel();
+
+        if (levelNumber == 2) {
+            boostsManager.StartTutorialMagnet();
+        }
+
+        if (levelNumber == 3) {
+            boostsManager.StartTutorialBroomstick();
+        }
+
+        startLevelTime = Time.time;
+
+        var boxManager = FindFirstObjectByType<BoxesManager>();
+        boxManager.GetComponent<BoxesManager>().StartLevel();
 
         parentBolt = FindObjectOfType<ParentBolt>();
         if (parentBolt == null)
@@ -136,11 +173,16 @@ public class GameSettings : MonoBehaviour
         if (parentBolt != null && parentBolt.boltAllCount == parentBolt.currentCountBolt)
         {
             endLevel.StartRoulette();
+            FirebaseInitializer.Instance.SendEventLevelComplitedTime(levelNumber, Time.time - startLevelTime);
 
             levelCompleted = true;
-            levelNumber++;
-            LevelUpdate();
 
+            levelNumber++;
+
+            PlayerPrefs.SetInt("CurrentLevel", levelNumber);
+            PlayerPrefs.Save();
+
+            LevelUpdate();
             if (parentBolt != null)
             {
                 parentBolt.boltAllCount = parentBolt.GetBoltCount();
@@ -161,13 +203,13 @@ public class GameSettings : MonoBehaviour
         }
 
         if (levelText != null)
-            levelText.text = "Уровень: " + levelNumber.ToString();
+            levelText.text = "Level: " + levelNumber.ToString();
     }
 
 
     public void AddMoney(int value)
     {
-        currentLevelEarnings += value;
+        //currentLevelEarnings += value;
 
         AnimateMoneyGain(value);
     }
@@ -175,10 +217,10 @@ public class GameSettings : MonoBehaviour
 
     private void AnimateMoneyGain(int value)
     {
-        int startMoney = currentMoney;
-        int targetMoney = currentMoney + value;
-        currentMoney = targetMoney;
-
+        int startMoney = CurrentMoney;
+        int targetMoney = CurrentMoney + value;
+        CurrentMoney = targetMoney;
+        PlayerPrefs.SetInt("Money", CurrentMoney);
         // 1. Плавная анимация счета
         DOTween.To(() => startMoney, x =>
         {
@@ -219,5 +261,9 @@ public class GameSettings : MonoBehaviour
         LevelUpdate();
         parentBolt.boltAllCount = parentBolt.GetBoltCount();
         ResetGame();
+    }
+
+    public int GetLevelNumber() {
+        return levelNumber;
     }
 }

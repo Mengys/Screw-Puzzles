@@ -8,13 +8,6 @@ public enum TaskType
     DisassembleBuilding
 }
 
-public enum BoltColor
-{
-    Red,
-    Yellow,
-    Blue
-}
-
 public class TaskManager : MonoBehaviour
 {
     [System.Serializable]
@@ -22,13 +15,13 @@ public class TaskManager : MonoBehaviour
     {
         public string description;
         public TaskType type;
-        public Color requiredColor;
+        public ColorsEnum requiredColor;
         public int currentCount;
         public int targetCount;
         public bool completed;
         public Task nextTask;
 
-        public Task(string desc, TaskType type, int target, Color color)
+        public Task(string desc, TaskType type, int target, ColorsEnum color)
         {
             description = desc;
             this.type = type;
@@ -64,9 +57,9 @@ public class TaskManager : MonoBehaviour
         var red = Color.red;
         var yellow = Color.yellow;
 
-        var redTask = new Task("Раскрутить красные болты", TaskType.UnscrewBolt, 5, red);
-        var yellowTask = new Task("Раскрутить жёлтые болты", TaskType.UnscrewBolt, 5, yellow);
-        var dismantle = new Task("Разобрать строения", TaskType.DisassembleBuilding, 2, Color.clear);
+        var redTask = new Task("Unscrew the red bolts", TaskType.UnscrewBolt, 5, ColorsEnum.red);
+        var yellowTask = new Task("Unscrew the yellow bolts", TaskType.UnscrewBolt, 5, ColorsEnum.yellow);
+        var dismantle = new Task("Dismantle the buildings", TaskType.DisassembleBuilding, 2, ColorsEnum.red);
 
         redTask.nextTask = yellowTask;
         yellowTask.nextTask = dismantle;
@@ -75,43 +68,19 @@ public class TaskManager : MonoBehaviour
         UpdateTaskUI();
     }
 
-    public void ProgressBoltTask(Color actualColor)
+    public void ProgressBoltTask(ColorsEnum actualColor)
     {
-        foreach (var task in tasks)
-        {
-            if (!task.completed)
-            {
-                if (task.type == TaskType.UnscrewBolt)
-                {
-                    if (ColorsAreSimilar(task.requiredColor, actualColor))
-                    {
-                        task.Progress();
-                        Debug.Log($"Задание обновлено: {task.description} ({task.currentCount}/{task.targetCount})");
+        foreach (var task in tasks) {
+            if (task.completed) continue;
 
-                        if (task.completed)
-                        {
-                            Debug.Log($"Задание выполнено: {task.description}");
-                            if (task.nextTask != null)
-                            {
-                                tasks.Add(task.nextTask);
-                                Debug.Log($"Новое задание: {task.nextTask.description}");
-                            }
-                        }
-
-                        UpdateTaskUI();
-                        break;
-                    }
-                }
-                else if (task.type == TaskType.DisassembleBuilding)
-                {
+            if (task.type == TaskType.UnscrewBolt) {
+                if (task.requiredColor == actualColor) {
                     task.Progress();
                     Debug.Log($"Задание обновлено: {task.description} ({task.currentCount}/{task.targetCount})");
 
-                    if (task.completed)
-                    {
+                    if (task.completed) {
                         Debug.Log($"Задание выполнено: {task.description}");
-                        if (task.nextTask != null)
-                        {
+                        if (task.nextTask != null) {
                             tasks.Add(task.nextTask);
                             Debug.Log($"Новое задание: {task.nextTask.description}");
                         }
@@ -120,6 +89,20 @@ public class TaskManager : MonoBehaviour
                     UpdateTaskUI();
                     break;
                 }
+            } else if (task.type == TaskType.DisassembleBuilding) {
+                task.Progress();
+                Debug.Log($"Задание обновлено: {task.description} ({task.currentCount}/{task.targetCount})");
+
+                if (task.completed) {
+                    Debug.Log($"Задание выполнено: {task.description}");
+                    if (task.nextTask != null) {
+                        tasks.Add(task.nextTask);
+                        Debug.Log($"Новое задание: {task.nextTask.description}");
+                    }
+                }
+
+                UpdateTaskUI();
+                break;
             }
         }
     }
@@ -133,7 +116,7 @@ public class TaskManager : MonoBehaviour
                 task.Progress();
                 Debug.Log($"Прогресс по заданию: {task.description} ({task.currentCount}/{task.targetCount})");
 
-                if (task.completed)
+                if (task.completed) 
                 {
                     Debug.Log($"Задание выполнено: {task.description}");
                     if (task.nextTask != null)
@@ -147,13 +130,6 @@ public class TaskManager : MonoBehaviour
                 break;
             }
         }
-    }
-
-    private bool ColorsAreSimilar(Color a, Color b, float tolerance = 0.1f)
-    {
-        return Mathf.Abs(a.r - b.r) < tolerance &&
-               Mathf.Abs(a.g - b.g) < tolerance &&
-               Mathf.Abs(a.b - b.b) < tolerance;
     }
 
     private void UpdateTaskUI()
