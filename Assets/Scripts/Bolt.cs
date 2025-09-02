@@ -141,7 +141,7 @@ public class Bolt : MonoBehaviour {
                 moveDistance = 100;
                 break;
             case 2:
-                moveDistance = 100;
+                moveDistance = 3;
                 break;
             case 3:
                 moveDistance = 3;

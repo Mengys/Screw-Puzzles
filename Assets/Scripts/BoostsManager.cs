@@ -14,9 +14,12 @@ public class BoostsManager : MonoBehaviour
     [SerializeField] private GameObject _magnetLock;
     [SerializeField] private GameObject _broomstickLock;
     [SerializeField] private GameObject _broomstickEffect;
+    [SerializeField] private GameObject _magnetShop;
+    [SerializeField] private GameObject _broomstickShop;
 
     [SerializeField] private int magnetCount = 3;
     [SerializeField] private int broomstickCount = 3;
+    private bool broomstickComplete = false;
 
     private void Start() {
         magnetCount = PlayerPrefs.GetInt("Magnet");
@@ -34,7 +37,10 @@ public class BoostsManager : MonoBehaviour
     }
 
     public void UseMagnet() {
-        if (magnetCount == 0) return;
+        if (magnetCount <= 0) {
+            _magnetShop.SetActive(true);
+            return;
+        }
         _tutorialMagnet.SetActive(false);
         magnetCount--;
         PlayerPrefs.SetInt("Magnet", magnetCount);
@@ -43,9 +49,15 @@ public class BoostsManager : MonoBehaviour
     }
 
     public void UseBroomstick() {
-        if (broomstickCount == 0) return;
-        _tutorialBroomstick.GetComponent<TutorialBroomstick>().SendBoltsToBox();
-        _tutorialBroomstick.GetComponent<TutorialBroomstick>().Deactivate();
+        if (broomstickCount <= 0) {
+            _broomstickShop.SetActive(true);
+            return;
+        }
+        if (!broomstickComplete) {
+            _tutorialBroomstick.GetComponent<TutorialBroomstick>().SendBoltsToBox();
+            _tutorialBroomstick.GetComponent<TutorialBroomstick>().Deactivate();
+            broomstickComplete = true;
+        }
         if (holesManager.GetComponent<HolesManager>().FreeHolesCount() == 5) return;
         broomstickCount--;
         _broomstickEffect.SetActive(true);
@@ -72,6 +84,35 @@ public class BoostsManager : MonoBehaviour
         broomstickText.GetComponent<TextMeshProUGUI>().text = broomstickCount.ToString();
         holesManager.GetComponent<HolesManager>().SendBoltsToBoltBox();
     }
+
+    public void AddBroomstickForAd() {
+        broomstickCount++;
+        broomstickText.GetComponent<TextMeshProUGUI>().text = broomstickCount.ToString();
+        _broomstickShop.SetActive(false);
+    }
+    public void AddBroomstickForCoins(int coins) {
+        var gameSettings = FindAnyObjectByType<GameSettings>();
+        if (gameSettings.CurrentMoney < coins) return;
+        gameSettings.AddMoney(-coins);
+        broomstickCount++;
+        broomstickText.GetComponent<TextMeshProUGUI>().text = broomstickCount.ToString();
+        _broomstickShop.SetActive(false);
+    }
+
+    public void AddMagnetForAd() {
+        magnetCount++;
+        magnetText.GetComponent<TextMeshProUGUI>().text = magnetCount.ToString();
+        _magnetShop.SetActive(false);
+    }
+    public void AddMagnetForCoins(int coins) {
+        var gameSettings = FindAnyObjectByType<GameSettings>();
+        if (gameSettings.CurrentMoney < coins) return;
+        gameSettings.AddMoney(-coins);
+        magnetCount++;
+        magnetText.GetComponent<TextMeshProUGUI>().text = magnetCount.ToString();
+        _magnetShop.SetActive(false);
+    }
+
 
     public void AddMagnet(int i) {
         magnetCount++;

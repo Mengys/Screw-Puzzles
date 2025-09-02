@@ -11,7 +11,7 @@ public class EndLevel : MonoBehaviour
     [SerializeField] private RectTransform xImage;
     [SerializeField] private int prizeCount = 5;
     [SerializeField] private GameSettings game;
-    [SerializeField] private new AudioSource audio;
+    [SerializeField] private AudioSource audio;
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private float letterDelay = 0.1f;
     [SerializeField] private AudioSource audioSource;
@@ -57,6 +57,7 @@ public class EndLevel : MonoBehaviour
         rightX = halfWidth;
 
         prizesSystem.SetActive(true);
+        audio.Play();
 
         //isRoulete = true;
         isMoving = true;
@@ -79,7 +80,7 @@ public class EndLevel : MonoBehaviour
     public void RewardADSPrize()
     {
         // ÐÅÊËÀÌÀ
-
+        YandexAd.Instance.ShowRewardAdv();
         game.AddMoney(compeleteMoney);
     }
 
@@ -126,7 +127,7 @@ public class EndLevel : MonoBehaviour
         float targetX = leftX + segmentWidth * prizeIndex + segmentWidth / 2f;
         triangle.DOAnchorPosX(targetX, 0.4f).SetEase(Ease.OutBack)
             .OnComplete(() => {
-                audio.Play();
+                
 
                 StartCoroutine(ShowTextGradually("Congratulations!" + "\n Click to continue"));
             });
